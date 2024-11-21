@@ -105,7 +105,7 @@ async function downloadNovel(title, episodeLinks, startEpisode) {
             continue;
         }
 
-        const logText = `Downloading: ${title} - Episode ${startingIndex - i + 1}/${startingIndex + 1}`;
+        const logText = `Downloading: ${title} - Episode ${startingIndex - i + 1}/${endEpisode - startEpisode + 1}`;
         console.log(logText);
 
         let episodeContent = await fetchNovelContent(episodeUrl);
