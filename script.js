@@ -1,82 +1,4 @@
-async function fetchNovelContent(url) {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-        console.error(`Failed to fetch content from ${url}. Status: ${response.status}`);
-        return null;
-    }
-
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const content = doc.querySelector('#novel_content');
-
-    if (!content) {
-        console.error(`Failed to find '#novel_content' on the page: ${url}`);
-        return null;
-    }
-
-    return cleanText(content.innerHTML);
-}
-
-function unescapeHTML(text) {
-    const entities = {
-        '&lt;': '<', '&gt;': '>', '&amp;': '&',
-        '&quot;': '"', '&apos;': "'", '&#039;': "'",
-        '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—',
-        '&lsquo;': '‘', '&rsquo;': '’', '&ldquo;': '“', '&rdquo;': '”'
-    };
-
-    Object.entries(entities).forEach(([entity, replacement]) => {
-        const regex = new RegExp(entity, 'g');
-        text = text.replace(regex, replacement);
-    });
-
-    return text;
-}
-
-function cleanText(text) {
-    text = text.replace(/<div>/g, '');
-    text = text.replace(/<\/div>/g, '');
-    text = text.replace(/<p>/g, '\n');
-    text = text.replace(/<\/p>/g, '\n');
-    text = text.replace(/<br\s*[/]?>/g, '\n');
-    text = text.replace(/<[^>]*>/g, '');
-    text = text.replace(/ {2,}/g, ' ');
-    text = text.replace(/\n{2,}/g, '\n\n');
-    text = unescapeHTML(text);
-
-    return text;
-}
-
-function createModal() {
-    const modal = document.createElement('div');
-    modal.id = 'downloadProgressModal';
-    modal.style.display = 'block';
-    modal.style.position = 'fixed';
-    modal.style.zIndex = '1';
-    modal.style.left = '0';
-    modal.style.top = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.overflow = 'auto';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
-
-    const modalContent = document.createElement('div');
-    modalContent.style.backgroundColor = '#fefefe';
-    modalContent.style.position = 'relative';
-    modalContent.style.margin = '15% auto 0';
-    modalContent.style.padding = '20px';
-    modalContent.style.border = '1px solid #888';
-    modalContent.style.width = '50%';
-    modalContent.style.textAlign = 'center';
-
-    modal.appendChild(modalContent);
-
-    return {modal, modalContent};
-}
-
-async function downloadNovel(title, episodeLinks, startEpisode) {
+async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
     let novelText = `${title}\n\nDownloaded with novel-dl,\nhttps://github.com/musicofbugs/novel-dl\n`;
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     const {modal, modalContent} = createModal();
@@ -97,7 +19,8 @@ async function downloadNovel(title, episodeLinks, startEpisode) {
     const startTime = new Date();
     const startingIndex = episodeLinks.length - startEpisode;
 
-    for (let i = startingIndex; i >= 0; i--) {
+    // Update loop to download from startEpisode to endEpisode (inclusive)
+    for (let i = startingIndex; i >= startingIndex - (endEpisode - startEpisode); i--) {
         const episodeUrl = episodeLinks[i];
 
         if (!episodeUrl.startsWith('https://booktoki')) {
@@ -105,7 +28,7 @@ async function downloadNovel(title, episodeLinks, startEpisode) {
             continue;
         }
 
-        const logText = `Downloading: ${title} - Episode ${startingIndex - i + 1}/${startingIndex + 1}`;
+        const logText = `Downloading: ${title} - Episode ${startingIndex - i + 1}/${endEpisode - startEpisode + 1}`;
         console.log(logText);
 
         let episodeContent = await fetchNovelContent(episodeUrl);
@@ -136,7 +59,7 @@ ${episodeUrl}.
 
         novelText += episodeContent;
 
-        const progress = ((startingIndex - i + 1) / (startingIndex + 1)) * 100;
+        const progress = ((startingIndex - i + 1) / (endEpisode - startEpisode + 1)) * 100;
         progressBar.style.width = `${progress}%`;
 
         const elapsedTime = new Date() - startTime;
@@ -152,41 +75,12 @@ ${episodeUrl}.
 
     document.body.removeChild(modal);
 
-    const fileName = `${title}(${startEpisode}~${episodeLinks.length}).txt`;
+    const fileName = `${title}(${startEpisode}~${endEpisode}).txt`;
     const blob = new Blob([novelText], {type: 'text/plain'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = fileName;
     a.click();
-}
-
-function extractTitle() {
-    const titleElement = document.evaluate('//*[@id="content_wrapper"]/div[1]/span', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    return titleElement ? titleElement.textContent.trim() : null;
-}
-
-function extractEpisodeLinks() {
-    const episodeLinks = [];
-    const links = document.querySelectorAll('.item-subject');
-
-    links.forEach(link => {
-        const episodeLink = link.getAttribute('href');
-        episodeLinks.push(episodeLink);
-    });
-
-    return episodeLinks;
-}
-
-async function fetchPage(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-        console.error(`Failed to fetch page: ${url}. Status: ${response.status}`);
-        return null;
-    }
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    return doc;
 }
 
 async function runCrawler() {
@@ -230,22 +124,24 @@ async function runCrawler() {
     }
 
     const startEpisode = prompt(`다운로드를 시작할 회차 번호를 입력하세요 (1 부터 ${allEpisodeLinks.length}):`, '1');
+    const endEpisode = prompt(`다운로드를 마칠 회차 번호를 입력하세요 (1 부터 ${allEpisodeLinks.length}):`, allEpisodeLinks.length.toString());
 
-    if (!startEpisode || isNaN(startEpisode)) {
-        console.log('Invalid episode number or user canceled the input.');
+    if (!startEpisode || !endEpisode || isNaN(startEpisode) || isNaN(endEpisode)) {
+        console.log('Invalid episode numbers or user canceled the input.');
         return;
     }
 
     const startEpisodeNumber = parseInt(startEpisode, 10);
+    const endEpisodeNumber = parseInt(endEpisode, 10);
 
-    if (startEpisodeNumber < 1 || startEpisodeNumber > allEpisodeLinks.length) {
-        console.log('Invalid episode number. Please enter a number between 1 and the total number of episodes.');
+    if (startEpisodeNumber < 1 || endEpisodeNumber < startEpisodeNumber || endEpisodeNumber > allEpisodeLinks.length) {
+        console.log('Invalid episode range. Please enter a valid range.');
         return;
     }
 
-    console.log(`Task Appended: Preparing to download ${title} starting from episode ${startEpisodeNumber}`);
+    console.log(`Task Appended: Preparing to download ${title} from episode ${startEpisodeNumber} to ${endEpisodeNumber}`);
 
-    downloadNovel(title, allEpisodeLinks, startEpisodeNumber);
+    downloadNovel(title, allEpisodeLinks, startEpisodeNumber, endEpisodeNumber);
 }
 
 runCrawler();
