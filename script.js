@@ -6,9 +6,9 @@ async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
 
     const progressBar = document.createElement('div');
     progressBar.style.width = '0%';
-    progressBar.style.height = '10px';
+//    progressBar.style.height = '10px';
     progressBar.style.backgroundColor = '#008CBA';
-    progressBar.style.marginTop = '10px';
+//    progressBar.style.marginTop = '10px';
     progressBar.style.borderRadius = '3px';
     modalContent.appendChild(progressBar);
 
