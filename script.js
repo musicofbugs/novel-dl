@@ -1,4 +1,82 @@
-async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
+async function fetchNovelContent(url) {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        console.error(`Failed to fetch content from ${url}. Status: ${response.status}`);
+        return null;
+    }
+
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const content = doc.querySelector('#novel_content');
+
+    if (!content) {
+        console.error(`Failed to find '#novel_content' on the page: ${url}`);
+        return null;
+    }
+
+    return cleanText(content.innerHTML);
+}
+
+function unescapeHTML(text) {
+    const entities = {
+        '&lt;': '<', '&gt;': '>', '&amp;': '&',
+        '&quot;': '"', '&apos;': "'", '&#039;': "'",
+        '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—',
+        '&lsquo;': '‘', '&rsquo;': '’', '&ldquo;': '“', '&rdquo;': '”'
+    };
+
+    Object.entries(entities).forEach(([entity, replacement]) => {
+        const regex = new RegExp(entity, 'g');
+        text = text.replace(regex, replacement);
+    });
+
+    return text;
+}
+
+function cleanText(text) {
+    text = text.replace(/<div>/g, '');
+    text = text.replace(/<\/div>/g, '');
+    text = text.replace(/<p>/g, '\n');
+    text = text.replace(/<\/p>/g, '\n');
+    text = text.replace(/<br\s*[/]?>/g, '\n');
+    text = text.replace(/<[^>]*>/g, '');
+    text = text.replace(/ {2,}/g, ' ');
+    text = text.replace(/\n{2,}/g, '\n\n');
+    text = unescapeHTML(text);
+
+    return text;
+}
+
+function createModal() {
+    const modal = document.createElement('div');
+    modal.id = 'downloadProgressModal';
+    modal.style.display = 'block';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '1';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.overflow = 'auto';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
+
+    const modalContent = document.createElement('div');
+    modalContent.style.backgroundColor = '#fefefe';
+    modalContent.style.position = 'relative';
+    modalContent.style.margin = '15% auto 0';
+    modalContent.style.padding = '20px';
+    modalContent.style.border = '1px solid #888';
+    modalContent.style.width = '50%';
+    modalContent.style.textAlign = 'center';
+
+    modal.appendChild(modalContent);
+
+    return {modal, modalContent};
+}
+
+async function downloadNovel(title, episodeLinks, startEpisode) {
     let novelText = `${title}\n`;
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     const {modal, modalContent} = createModal();
@@ -6,21 +84,20 @@ async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
 
     const progressBar = document.createElement('div');
     progressBar.style.width = '0%';
-//    progressBar.style.height = '10px';
+    progressBar.style.height = '10px';
     progressBar.style.backgroundColor = '#008CBA';
-//    progressBar.style.marginTop = '10px';
+    progressBar.style.marginTop = '10px';
     progressBar.style.borderRadius = '3px';
     modalContent.appendChild(progressBar);
 
     const progressLabel = document.createElement('div');
-//    progressLabel.style.marginTop = '5px';
+    progressLabel.style.marginTop = '5px';
     modalContent.appendChild(progressLabel);
 
     const startTime = new Date();
     const startingIndex = episodeLinks.length - startEpisode;
 
-    // Update loop to download from startEpisode to endEpisode (inclusive)
-    for (let i = startingIndex; i >= startingIndex - (endEpisode - startEpisode); i--) {
+    for (let i = startingIndex; i >= 0; i--) {
         const episodeUrl = episodeLinks[i];
 
         if (!episodeUrl.startsWith('https://booktoki')) {
@@ -28,7 +105,7 @@ async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
             continue;
         }
 
-        const logText = `Downloading: ${title} - Episode ${startingIndex - i + 1}/${endEpisode - startEpisode + 1}`;
+        const logText = `Downloading: ${title} - Episode ${startingIndex - i + 1}/${startingIndex + 1}`;
         console.log(logText);
 
         let episodeContent = await fetchNovelContent(episodeUrl);
@@ -59,7 +136,7 @@ ${episodeUrl}.
 
         novelText += episodeContent;
 
-        const progress = ((startingIndex - i + 1) / (endEpisode - startEpisode + 1)) * 100;
+        const progress = ((startingIndex - i + 1) / (startingIndex + 1)) * 100;
         progressBar.style.width = `${progress}%`;
 
         const elapsedTime = new Date() - startTime;
@@ -75,12 +152,41 @@ ${episodeUrl}.
 
     document.body.removeChild(modal);
 
-    const fileName = `${title}(${startEpisode}~${endEpisode}).txt`;
+    const fileName = `${title}(${startEpisode}~${episodeLinks.length}).txt`;
     const blob = new Blob([novelText], {type: 'text/plain'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = fileName;
     a.click();
+}
+
+function extractTitle() {
+    const titleElement = document.evaluate('//*[@id="content_wrapper"]/div[1]/span', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    return titleElement ? titleElement.textContent.trim() : null;
+}
+
+function extractEpisodeLinks() {
+    const episodeLinks = [];
+    const links = document.querySelectorAll('.item-subject');
+
+    links.forEach(link => {
+        const episodeLink = link.getAttribute('href');
+        episodeLinks.push(episodeLink);
+    });
+
+    return episodeLinks;
+}
+
+async function fetchPage(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        console.error(`Failed to fetch page: ${url}. Status: ${response.status}`);
+        return null;
+    }
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc;
 }
 
 async function runCrawler() {
