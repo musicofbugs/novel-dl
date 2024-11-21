@@ -77,7 +77,7 @@ function createModal() {
 }
 
 async function downloadNovel(title, episodeLinks, startEpisode) {
-    let novelText = `${title}\n\nDownloaded with novel-dl,\nhttps://github.com/yeorinhieut/novel-dl\n`;
+    let novelText = `${title}\n\nDownloaded with novel-dl,\nhttps://github.com/musicofbugs/novel-dl\n`;
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     const {modal, modalContent} = createModal();
     document.body.appendChild(modal);
