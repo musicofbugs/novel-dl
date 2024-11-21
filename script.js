@@ -13,7 +13,7 @@ async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
     modalContent.appendChild(progressBar);
 
     const progressLabel = document.createElement('div');
-    progressLabel.style.marginTop = '2px';
+//    progressLabel.style.marginTop = '5px';
     modalContent.appendChild(progressLabel);
 
     const startTime = new Date();
@@ -123,9 +123,8 @@ async function runCrawler() {
         }
     }
 
-    const endEpisode = prompt(`다운로드를 마칠 회차 번호를 입력하세요 (1 부터 ${allEpisodeLinks.length}):`, allEpisodeLinks.length.toString());
     const startEpisode = prompt(`다운로드를 시작할 회차 번호를 입력하세요 (1 부터 ${allEpisodeLinks.length}):`, '1');
-
+    const endEpisode = prompt(`다운로드를 마칠 회차 번호를 입력하세요 (1 부터 ${allEpisodeLinks.length}):`, allEpisodeLinks.length.toString());
 
     if (!startEpisode || !endEpisode || isNaN(startEpisode) || isNaN(endEpisode)) {
         console.log('Invalid episode numbers or user canceled the input.');
