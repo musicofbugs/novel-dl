@@ -1,5 +1,5 @@
 async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
-    let novelText = `${title}\n\nDownloaded with novel-dl,\nhttps://github.com/musicofbugs/novel-dl\n`;
+    let novelText = `${title}\n`;
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     const {modal, modalContent} = createModal();
     document.body.appendChild(modal);
@@ -13,7 +13,7 @@ async function downloadNovel(title, episodeLinks, startEpisode, endEpisode) {
     modalContent.appendChild(progressBar);
 
     const progressLabel = document.createElement('div');
-    progressLabel.style.marginTop = '5px';
+    progressLabel.style.marginTop = '2px';
     modalContent.appendChild(progressLabel);
 
     const startTime = new Date();
