@@ -42,13 +42,26 @@ javascript:(function(){
 
 
             let firstElement = novelContent.querySelector("p, div");
+            if (!firstElement) {
+
+                firstElement = novelContent.firstChild;
+                if (firstElement && firstElement.nodeType === Node.TEXT_NODE) {
+                    const wrapper = document.createElement("div");
+                    wrapper.textContent = firstElement.textContent.trim();
+                    novelContent.replaceChild(wrapper, firstElement);
+                    firstElement = wrapper;
+                }
+            }
+
             if (firstElement) {
+
                 firstElement.style.fontWeight = "bold";
                 firstElement.style.textAlign = "center";
 
-                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
+
+                const emptyLine1 = document.createElement("div");
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine2 = document.createElement("div");
                 emptyLine2.innerHTML = "&nbsp;";
                 firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
                 firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
@@ -56,7 +69,12 @@ javascript:(function(){
 
 
             let lastElement = novelContent.querySelector("p:last-child, div:last-child");
-            if (lastElement && lastElement.textContent.trim().endsWith("끝")) {
+            if (!lastElement) {
+                lastElement = novelContent.lastChild;
+                if (lastElement && lastElement.nodeType === Node.TEXT_NODE && lastElement.textContent.trim().endsWith("끝")) {
+                    novelContent.removeChild(lastElement);
+                }
+            } else if (lastElement.textContent.trim().endsWith("끝")) {
                 lastElement.parentNode.removeChild(lastElement);
             }
 
