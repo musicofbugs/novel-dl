@@ -94,3 +94,7 @@ ${episodeUrl}.
 
     document.body.removeChild(modal);
 }
+
+
+runCrawler();
+
