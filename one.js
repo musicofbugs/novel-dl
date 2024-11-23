@@ -92,7 +92,7 @@ javascript:(function(){
             a.click();
 
             console.log(`Saved: ${fileName}`);
-            await delay(1000); // 각 요청 사이에 1초 지연
+            await delay(1500); // 각 요청 사이에 1.5초 지연
         }
     }
 
