@@ -42,26 +42,13 @@ javascript:(function(){
 
             // 첫 줄 처리
             let firstElement = novelContent.querySelector("p, div");
-            if (!firstElement) {
-                // <p>나 <div>가 없을 경우 첫 번째 자식 노드를 사용
-                firstElement = novelContent.firstChild;
-                if (firstElement && firstElement.nodeType === Node.TEXT_NODE) {
-                    const wrapper = document.createElement("div");
-                    wrapper.textContent = firstElement.textContent.trim();
-                    novelContent.replaceChild(wrapper, firstElement);
-                    firstElement = wrapper;
-                }
-            }
-
             if (firstElement) {
-                // 스타일 적용
                 firstElement.style.fontWeight = "bold";
                 firstElement.style.textAlign = "center";
 
-                // 빈 줄 두 줄 추가
-                const emptyLine1 = document.createElement("div");
+                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement("div");
+                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
                 emptyLine2.innerHTML = "&nbsp;";
                 firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
                 firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
@@ -69,12 +56,7 @@ javascript:(function(){
 
             // 마지막 줄 처리
             let lastElement = novelContent.querySelector("p:last-child, div:last-child");
-            if (!lastElement) {
-                lastElement = novelContent.lastChild;
-                if (lastElement && lastElement.nodeType === Node.TEXT_NODE && lastElement.textContent.trim().endsWith("끝")) {
-                    novelContent.removeChild(lastElement);
-                }
-            } else if (lastElement.textContent.trim().endsWith("끝")) {
+            if (lastElement && lastElement.textContent.trim().endsWith("끝")) {
                 lastElement.parentNode.removeChild(lastElement);
             }
 
@@ -92,7 +74,7 @@ javascript:(function(){
             a.click();
 
             console.log(`Saved: ${fileName}`);
-            await delay(1500); // 각 요청 사이에 1.5초 지연
+            await delay(1000); // 각 요청 사이에 1초 지연
         }
     }
 
