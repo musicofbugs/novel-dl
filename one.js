@@ -41,23 +41,23 @@ javascript:(function(){
             }
 
             // 첫 줄 처리
-            let firstElement = novelContent.querySelector("p, div");
-            if (firstElement) {
-                firstElement.style.fontWeight = "bold";
-                firstElement.style.textAlign = "center";
+            const firstParagraph = novelContent.querySelector("p");
+            if (firstParagraph) {
+                firstParagraph.style.fontWeight = "bold";
+                firstParagraph.style.textAlign = "center";
 
-                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine1 = document.createElement("p");
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine2 = document.createElement("p");
                 emptyLine2.innerHTML = "&nbsp;";
-                firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
-                firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine1, firstParagraph.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
             // 마지막 줄 처리
-            let lastElement = novelContent.querySelector("p:last-child, div:last-child");
-            if (lastElement && lastElement.textContent.trim().endsWith("끝")) {
-                lastElement.parentNode.removeChild(lastElement);
+            const lastParagraph = novelContent.querySelector("p:last-child");
+            if (lastParagraph && lastParagraph.textContent.trim().endsWith("끝")) {
+                lastParagraph.parentNode.removeChild(lastParagraph);
             }
 
             // 파일 이름 설정: ".toon-title"에서 제목 가져오기
