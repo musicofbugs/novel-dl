@@ -41,41 +41,23 @@ javascript:(function(){
             }
 
 
-            let firstElement = novelContent.querySelector("p, div");
-            if (!firstElement) {
+            const firstParagraph = novelContent.querySelector("p");
+            if (firstParagraph) {
+                firstParagraph.style.fontWeight = "bold";
+                firstParagraph.style.textAlign = "center";
 
-                firstElement = novelContent.firstChild;
-                if (firstElement && firstElement.nodeType === Node.TEXT_NODE) {
-                    const wrapper = document.createElement("div");
-                    wrapper.textContent = firstElement.textContent.trim();
-                    novelContent.replaceChild(wrapper, firstElement);
-                    firstElement = wrapper;
-                }
-            }
-
-            if (firstElement) {
-
-                firstElement.style.fontWeight = "bold";
-                firstElement.style.textAlign = "center";
-
-
-                const emptyLine1 = document.createElement("div");
+                const emptyLine1 = document.createElement("p");
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement("div");
+                const emptyLine2 = document.createElement("p");
                 emptyLine2.innerHTML = "&nbsp;";
-                firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
-                firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine1, firstParagraph.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
 
-            let lastElement = novelContent.querySelector("p:last-child, div:last-child");
-            if (!lastElement) {
-                lastElement = novelContent.lastChild;
-                if (lastElement && lastElement.nodeType === Node.TEXT_NODE && lastElement.textContent.trim().endsWith("끝")) {
-                    novelContent.removeChild(lastElement);
-                }
-            } else if (lastElement.textContent.trim().endsWith("끝")) {
-                lastElement.parentNode.removeChild(lastElement);
+            const lastParagraph = novelContent.querySelector("p:last-child");
+            if (lastParagraph && lastParagraph.textContent.trim().endsWith("끝")) {
+                lastParagraph.parentNode.removeChild(lastParagraph);
             }
 
 
