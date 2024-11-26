@@ -48,24 +48,18 @@ javascript:(function(){
             }
 
 
-            let firstElement = novelContent.firstChild;
+            const firstElement = novelContent.firstChild;
             if (firstElement) {
-
-                const firstLine = firstElement.cloneNode(true);
-                firstLine.style.fontWeight = "bold";
-                firstLine.style.textAlign = "center";
+                firstElement.style.fontWeight = "bold";
+                firstElement.style.textAlign = "center";
 
 
-                novelContent.insertBefore(firstLine, firstElement);
-                novelContent.removeChild(firstElement);
-
-
-                const emptyLine1 = document.createElement(firstLine.tagName.toLowerCase());
+                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstLine.tagName.toLowerCase());
+                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
                 emptyLine2.innerHTML = "&nbsp;";
-                firstLine.parentNode.insertBefore(emptyLine1, firstLine.nextSibling);
-                firstLine.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                novelContent.insertBefore(emptyLine1, firstElement.nextSibling);
+                novelContent.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
 
