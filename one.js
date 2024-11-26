@@ -47,19 +47,25 @@ javascript:(function(){
                 novelContent.removeChild(novelContent.firstChild);
             }
 
-            // 첫 번째 실질적인 내용 노드 처리
+            // 첫 번째 실질적인 내용 노드 처리 (첫 줄만 스타일 적용)
             let firstElement = novelContent.firstChild;
             if (firstElement) {
-                firstElement.style.fontWeight = "bold";
-                firstElement.style.textAlign = "center";
+                const firstLine = document.createElement(firstElement.tagName.toLowerCase());
+                firstLine.textContent = firstElement.textContent.trim(); // 첫 줄의 텍스트 복사
+                firstLine.style.fontWeight = "bold";
+                firstLine.style.textAlign = "center";
+
+                // 첫 줄을 새로운 요소로 대체
+                novelContent.insertBefore(firstLine, firstElement);
+                novelContent.removeChild(firstElement);
 
                 // 빈 줄 두 줄 추가
-                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine1 = document.createElement(firstLine.tagName.toLowerCase());
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine2 = document.createElement(firstLine.tagName.toLowerCase());
                 emptyLine2.innerHTML = "&nbsp;";
-                firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
-                firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                firstLine.parentNode.insertBefore(emptyLine1, firstLine.nextSibling);
+                firstLine.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
             // 마지막 줄 처리
