@@ -50,6 +50,7 @@ javascript:(function(){
 
             const firstElement = novelContent.firstChild;
             if (firstElement) {
+
                 firstElement.style.fontWeight = "bold";
                 firstElement.style.textAlign = "center";
 
@@ -60,6 +61,16 @@ javascript:(function(){
                 emptyLine2.innerHTML = "&nbsp;";
                 novelContent.insertBefore(emptyLine1, firstElement.nextSibling);
                 novelContent.insertBefore(emptyLine2, emptyLine1.nextSibling);
+
+
+                let currentElement = emptyLine2.nextSibling;
+                while (currentElement) {
+                    if (currentElement.style) {
+                        currentElement.style.fontWeight = "normal";
+                        currentElement.style.textAlign = "left";
+                    }
+                    currentElement = currentElement.nextSibling;
+                }
             }
 
 
