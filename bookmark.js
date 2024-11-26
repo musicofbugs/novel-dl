@@ -50,16 +50,22 @@ javascript:(function(){
 
             let firstElement = novelContent.firstChild;
             if (firstElement) {
-                firstElement.style.fontWeight = "bold";
-                firstElement.style.textAlign = "center";
+                const firstLine = document.createElement(firstElement.tagName.toLowerCase());
+                firstLine.textContent = firstElement.textContent.trim(); // 첫 줄의 텍스트 복사
+                firstLine.style.fontWeight = "bold";
+                firstLine.style.textAlign = "center";
 
 
-                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
+                novelContent.insertBefore(firstLine, firstElement);
+                novelContent.removeChild(firstElement);
+
+
+                const emptyLine1 = document.createElement(firstLine.tagName.toLowerCase());
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine2 = document.createElement(firstLine.tagName.toLowerCase());
                 emptyLine2.innerHTML = "&nbsp;";
-                firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
-                firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                firstLine.parentNode.insertBefore(emptyLine1, firstLine.nextSibling);
+                firstLine.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
 
@@ -75,7 +81,7 @@ javascript:(function(){
                 novelContent.removeChild(lastElement);
             }
 
-
+            // 파일 이름 설정: ".toon-title"에서 제목 가져오기
             const titleElement = episodePage.querySelector(".toon-title");
             const fileName = titleElement
                 ? titleElement.getAttribute("title").replace(/<|>|\/|:|"|%27|\?|\\|\*|&|#|%|\s/g, "_").slice(0, 50) + ".html"
