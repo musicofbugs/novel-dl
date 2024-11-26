@@ -81,7 +81,7 @@ javascript:(function(){
                 novelContent.removeChild(lastElement);
             }
 
-            // 파일 이름 설정: ".toon-title"에서 제목 가져오기
+
             const titleElement = episodePage.querySelector(".toon-title");
             const fileName = titleElement
                 ? titleElement.getAttribute("title").replace(/<|>|\/|:|"|%27|\?|\\|\*|&|#|%|\s/g, "_").slice(0, 50) + ".html"
