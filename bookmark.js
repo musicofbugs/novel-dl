@@ -48,9 +48,8 @@ javascript:(function(){
             }
 
 
-            const firstElement = novelContent.firstChild;
+            let firstElement = novelContent.firstChild;
             if (firstElement) {
-
                 firstElement.style.fontWeight = "bold";
                 firstElement.style.textAlign = "center";
 
@@ -59,18 +58,8 @@ javascript:(function(){
                 emptyLine1.innerHTML = "&nbsp;";
                 const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
                 emptyLine2.innerHTML = "&nbsp;";
-                novelContent.insertBefore(emptyLine1, firstElement.nextSibling);
-                novelContent.insertBefore(emptyLine2, emptyLine1.nextSibling);
-
-
-                let currentElement = emptyLine2.nextSibling;
-                while (currentElement) {
-                    if (currentElement.style) {
-                        currentElement.style.fontWeight = "normal";
-                        currentElement.style.textAlign = "left";
-                    }
-                    currentElement = currentElement.nextSibling;
-                }
+                firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
+                firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
 
