@@ -40,6 +40,13 @@ javascript:(function(){
                 continue;
             }
 
+            // 불필요한 공백 노드와 빈 줄 제거
+            while (novelContent.firstChild && 
+                  (novelContent.firstChild.nodeType === Node.TEXT_NODE && !novelContent.firstChild.textContent.trim() || 
+                   novelContent.firstChild.tagName === "P" && !novelContent.firstChild.textContent.trim())) {
+                novelContent.removeChild(novelContent.firstChild);
+            }
+
             // 첫 줄 처리
             const firstParagraph = novelContent.querySelector("p");
             if (firstParagraph) {
