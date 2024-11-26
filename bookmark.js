@@ -41,6 +41,13 @@ javascript:(function(){
             }
 
 
+            while (novelContent.firstChild && 
+                  (novelContent.firstChild.nodeType === Node.TEXT_NODE && !novelContent.firstChild.textContent.trim() || 
+                   novelContent.firstChild.tagName === "P" && !novelContent.firstChild.textContent.trim())) {
+                novelContent.removeChild(novelContent.firstChild);
+            }
+
+
             const firstParagraph = novelContent.querySelector("p");
             if (firstParagraph) {
                 firstParagraph.style.fontWeight = "bold";
