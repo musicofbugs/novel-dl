@@ -50,8 +50,8 @@ javascript:(function(){
 
             let firstElement = novelContent.firstChild;
             if (firstElement) {
-                const firstLine = document.createElement(firstElement.tagName.toLowerCase());
-                firstLine.textContent = firstElement.textContent.trim();
+
+                const firstLine = firstElement.cloneNode(true);
                 firstLine.style.fontWeight = "bold";
                 firstLine.style.textAlign = "center";
 
