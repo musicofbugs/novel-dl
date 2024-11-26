@@ -1,40 +1,24 @@
 javascript:(function() {
-    function saveDivAsHTML() {
 
-        const targetClassName = "DC2CN";
-        const titleSelector = "h1.txt";
+    var divs = document.querySelectorAll('.DC2CN');
 
+    if (divs.length > 0) {
 
-        const targetDiv = document.querySelector(`div.${targetClassName}`);
-        const titleElement = document.querySelector(titleSelector);
-
-        if (!targetDiv) {
-            alert(`클래스 이름 "${targetClassName}"를 가진 요소를 찾을 수 없습니다.`);
-            return;
-        }
-
-        if (!titleElement) {
-            alert(`제목 요소 "${titleSelector}"를 찾을 수 없습니다.`);
-            return;
-        }
+        var contentHtml = divs[0].outerHTML;
 
 
-        let fileName = titleElement.textContent.trim();
-        fileName = fileName.replace(/[/\\?%*:|"<>]/g, "_");
+        var titleElement = document.querySelector(".toon-title");
+        var fileName = titleElement ? titleElement.getAttribute("title") : "DC2CN_content";
+        fileName = fileName.replace(/<|>|\/|:|"|%27|\?|\\|\*|&|#|%|\s/g, "_").slice(0, 50);
         fileName += ".html";
 
 
-        const contentHtml = targetDiv.outerHTML;
-
-
-        const blob = new Blob([contentHtml], { type: "text/html" });
-        const a = document.createElement("a");
+        var blob = new Blob([contentHtml], { type: "text/html" });
+        var a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = fileName;
         a.click();
-
-        console.log(`Saved: ${fileName}`);
+    } else {
+        alert("DC2CN 클래스를 가진 div 요소를 찾을 수 없습니다.");
     }
-
-    saveDivAsHTML();
 })();
