@@ -40,45 +40,31 @@ javascript:(function(){
                 continue;
             }
 
-            // 불필요한 공백 노드 및 빈 요소 제거
+            // 불필요한 공백 노드와 빈 줄 제거
             while (novelContent.firstChild && 
                   (novelContent.firstChild.nodeType === Node.TEXT_NODE && !novelContent.firstChild.textContent.trim() || 
-                   novelContent.firstChild.tagName === "DIV" && !novelContent.firstChild.textContent.trim() && !novelContent.firstChild.querySelector("br"))) {
+                   novelContent.firstChild.tagName === "P" && !novelContent.firstChild.textContent.trim())) {
                 novelContent.removeChild(novelContent.firstChild);
             }
 
-            // 첫 번째 실질적인 내용 노드 처리 (첫 줄만 스타일 적용)
-            let firstElement = novelContent.firstChild;
-            if (firstElement) {
-                const firstLine = document.createElement(firstElement.tagName.toLowerCase());
-                firstLine.textContent = firstElement.textContent.trim(); // 첫 줄의 텍스트 복사
-                firstLine.style.fontWeight = "bold";
-                firstLine.style.textAlign = "center";
+            // 첫 줄 처리
+            const firstParagraph = novelContent.querySelector("p");
+            if (firstParagraph) {
+                firstParagraph.style.fontWeight = "bold";
+                firstParagraph.style.textAlign = "center";
 
-                // 첫 줄을 새로운 요소로 대체
-                novelContent.insertBefore(firstLine, firstElement);
-                novelContent.removeChild(firstElement);
-
-                // 빈 줄 두 줄 추가
-                const emptyLine1 = document.createElement(firstLine.tagName.toLowerCase());
+                const emptyLine1 = document.createElement("p");
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstLine.tagName.toLowerCase());
+                const emptyLine2 = document.createElement("p");
                 emptyLine2.innerHTML = "&nbsp;";
-                firstLine.parentNode.insertBefore(emptyLine1, firstLine.nextSibling);
-                firstLine.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine1, firstParagraph.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
             // 마지막 줄 처리
-            let lastElement = novelContent.lastChild;
-            while (lastElement && 
-                  (lastElement.nodeType === Node.TEXT_NODE && !lastElement.textContent.trim() || 
-                   lastElement.tagName === "DIV" && !lastElement.textContent.trim() && !lastElement.querySelector("br"))) {
-                novelContent.removeChild(lastElement);
-                lastElement = novelContent.lastChild;
-            }
-
-            if (lastElement && lastElement.textContent.trim().endsWith("끝")) {
-                novelContent.removeChild(lastElement);
+            const lastParagraph = novelContent.querySelector("p:last-child");
+            if (lastParagraph && lastParagraph.textContent.trim().endsWith("끝")) {
+                lastParagraph.parentNode.removeChild(lastParagraph);
             }
 
             // 파일 이름 설정: ".toon-title"에서 제목 가져오기
