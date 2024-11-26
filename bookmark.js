@@ -51,7 +51,7 @@ javascript:(function(){
             let firstElement = novelContent.firstChild;
             if (firstElement) {
                 const firstLine = document.createElement(firstElement.tagName.toLowerCase());
-                firstLine.textContent = firstElement.textContent.trim(); // 첫 줄의 텍스트 복사
+                firstLine.textContent = firstElement.textContent.trim();
                 firstLine.style.fontWeight = "bold";
                 firstLine.style.textAlign = "center";
 
