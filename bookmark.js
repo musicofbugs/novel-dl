@@ -43,36 +43,28 @@ javascript:(function(){
 
             while (novelContent.firstChild && 
                   (novelContent.firstChild.nodeType === Node.TEXT_NODE && !novelContent.firstChild.textContent.trim() || 
-                   novelContent.firstChild.tagName === "DIV" && !novelContent.firstChild.textContent.trim() && !novelContent.firstChild.querySelector("br"))) {
+                   novelContent.firstChild.tagName === "P" && !novelContent.firstChild.textContent.trim())) {
                 novelContent.removeChild(novelContent.firstChild);
             }
 
 
-            let firstElement = novelContent.firstChild;
-            if (firstElement) {
-                firstElement.style.fontWeight = "bold";
-                firstElement.style.textAlign = "center";
+            const firstParagraph = novelContent.querySelector("p");
+            if (firstParagraph) {
+                firstParagraph.style.fontWeight = "bold";
+                firstParagraph.style.textAlign = "center";
 
-
-                const emptyLine1 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine1 = document.createElement("p");
                 emptyLine1.innerHTML = "&nbsp;";
-                const emptyLine2 = document.createElement(firstElement.tagName.toLowerCase());
+                const emptyLine2 = document.createElement("p");
                 emptyLine2.innerHTML = "&nbsp;";
-                firstElement.parentNode.insertBefore(emptyLine1, firstElement.nextSibling);
-                firstElement.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine1, firstParagraph.nextSibling);
+                firstParagraph.parentNode.insertBefore(emptyLine2, emptyLine1.nextSibling);
             }
 
 
-            let lastElement = novelContent.lastChild;
-            while (lastElement && 
-                  (lastElement.nodeType === Node.TEXT_NODE && !lastElement.textContent.trim() || 
-                   lastElement.tagName === "DIV" && !lastElement.textContent.trim() && !lastElement.querySelector("br"))) {
-                novelContent.removeChild(lastElement);
-                lastElement = novelContent.lastChild;
-            }
-
-            if (lastElement && lastElement.textContent.trim().endsWith("끝")) {
-                novelContent.removeChild(lastElement);
+            const lastParagraph = novelContent.querySelector("p:last-child");
+            if (lastParagraph && lastParagraph.textContent.trim().endsWith("끝")) {
+                lastParagraph.parentNode.removeChild(lastParagraph);
             }
 
 
