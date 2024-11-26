@@ -20,7 +20,7 @@ javascript:(function() {
 
 
         let fileName = titleElement.textContent.trim();
-        fileName = fileName.replace(/[/\\?%*:|"<>]/g, "_"); // 파일명에 사용할 수 없는 문자 제거
+        fileName = fileName.replace(/[/\\?%*:|"<>]/g, "_");
         fileName += ".html";
 
 
