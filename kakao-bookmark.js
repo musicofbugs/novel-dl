@@ -1,25 +1,27 @@
 javascript:(function() {
     function saveDivAsHTML() {
 
-        const targetDivClassName = "DC2CN";
-        const targetH1ClassName = "txt";
+        const targetClassName = "DC2CN";
+        const titleSelector = "h1.txt";
 
 
-        const targetDiv = document.querySelector(`div.${targetDivClassName}`);
-        const targetH1 = document.querySelector(`h1.${targetH1ClassName}`);
+        const targetDiv = document.querySelector(`div.${targetClassName}`);
+        const titleElement = document.querySelector(titleSelector);
 
         if (!targetDiv) {
-            alert(`클래스 이름 "${targetDivClassName}"를 가진 요소를 찾을 수 없습니다.`);
+            alert(`클래스 이름 "${targetClassName}"를 가진 요소를 찾을 수 없습니다.`);
             return;
         }
 
-        if (!targetH1) {
-            alert(`클래스 이름 "${targetH1ClassName}"를 가진 h1 요소를 찾을 수 없습니다.`);
+        if (!titleElement) {
+            alert(`제목 요소 "${titleSelector}"를 찾을 수 없습니다.`);
             return;
         }
 
 
-        const fileName = `${targetH1.textContent.trim()}.html`;
+        let fileName = titleElement.textContent.trim();
+        fileName = fileName.replace(/[/\\?%*:|"<>]/g, "_"); // 파일명에 사용할 수 없는 문자 제거
+        fileName += ".html";
 
 
         const contentHtml = targetDiv.outerHTML;
